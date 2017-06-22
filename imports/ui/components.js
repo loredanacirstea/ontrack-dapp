@@ -15,7 +15,7 @@ class Input extends Component {
     return React.createElement('div', {},
       React.createElement('span', {}, this.props.label),
       React.createElement('input',
-        {name: 'input', label: 'Title', onChange: this.onChange}
+        {name: 'input', label: 'Title', defaultValue: this.props.defaultValue, onChange: this.onChange}
       )
     );
   }

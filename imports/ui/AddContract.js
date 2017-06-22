@@ -17,46 +17,61 @@ export default class AddContract extends Component {
 
   addContract(ev) {
     let { contract } = this;
-    console.log('addContract', this.contract);
+    let { networkId } = this.props;
 
-    if(!contract.name || !contract.client || !contract.provider || !contract.observer || !contract.deadline)
+    if(!contract.name || !contract.provider || !contract.observer || !contract.deadline)
       return;
+
+    contract.client = web3.eth.accounts[0];
+    if(!contract.client)
+      return;
+
+    // Deadline is actually the difference in seconds between the deadline and now
+    let deadlineDiff = (contract.deadline.getTime() - Date.now()) / 1000;
+
 
     let observer = this.props.observers.filter(o => {
       if(o._id == contract.observer)
         return true;
     })[0];
 
-    let trackContract = web3.eth.contract(OnTrack.abi);
-
+    let trackContract = web3.eth.contract(JSON.parse(OnTrack.abi));
     // Deploy contract
-    let track = observerContract.new(
-       {
-         from: web3.eth.accounts[0],
-         data: trackContract.data,
-         gas: trackContract.gas
-       }, function (err, contract){
-        console.log(err, contract);
-        if (typeof contract.address !== 'undefined') {
-             console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
-             //Meteor.call('observers.insert', {})
-        }
-     });
+    let track = trackContract.new(deadlineDiff, contract.provider, observer.address, {
+      from: contract.client,
+      data: OnTrack.data,
+      gas: OnTrack.gas
+    }, function (err, res) {
+      console.log(err, res);
+      if(!res || !res.address)
+        return;
 
+      console.log('Contract mined! address: ' + res.address + ' transactionHash: ' + res.transactionHash);
+      contract.address = res.address;
+      contract.transactionHash = res.transactionHash;
+      contract.networkId = networkId;
+      contract = Object.assign(contract, OnTrack);
+      delete contract.code;
+      Meteor.call('contracts.insert', contract);
+    });
   }
 
   render() {
     let options = this.props.observers.map(o => {
       return {value: o._id, label: o.name};
     });
-    console.log('options', options);
+
+    // Defaults
+    this.contract.observer = options[0] ? options[0].value : null;
+    this.contract.name = 'Contract1';
+    this.contract.deadline = new Date();
+
     return React.createElement('div', {},
-      React.createElement(Input, {label: 'Name', onChange: (value) => this.contract.name = value}),
-      React.createElement(Input, {label: 'Client', onChange: (value) => this.contract.client = value}),
+      React.createElement(Input, {label: 'Name', defaultValue: this.contract.name, onChange: (value) => this.contract.name = value}),
       React.createElement(Input, {label: 'Provider', onChange: (value) => this.contract.provider = value}),
       React.createElement(Select, {label: 'Observer', options, onChange: (value) => this.contract.observer = value}),
       //React.createElement(Datetime, {onChange: this.setDeadline, closeOnSelect: true})
-      React.createElement(Input, {label: 'Deadline', onChange: this.setDeadline}),
+      React.createElement(Input, {label: 'Deadline', defaultValue: this.contract.deadline, onChange: this.setDeadline}),
       React.createElement(Button, {label: '+', onClick: this.addContract})
     );
   }
