@@ -26,6 +26,9 @@ let ContractsSchema = new SimpleSchema({
   deadline: {
     type: Date
   },
+  client: {
+    type: String
+  },
   provider: {
     type: String
   },
@@ -33,6 +36,10 @@ let ContractsSchema = new SimpleSchema({
     type: String
   },
   networkId: {
+    type: String,
+    optional: true
+  },
+  transactionHash: {
     type: String,
     optional: true
   },

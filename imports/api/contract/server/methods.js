@@ -1,23 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import Contracts from '../contracts.js';
+import { ValidatedMethod } from 'meteor/mdg:validated-method';
+import { Contracts, ContractsSchema } from '../contracts.js';
 
-Meteor.methods({
-  'contracts.insert'({name, address, abi, deadline, provider, observer} = {}) {
-    check(name, String);
-    check(address, String);
-    check(abi, String);
-    check(deadline, Date);
-    check(provider, String);
-    check(observer, String);
-
-    return Contracts.insert({
-      name,
-      address,
-      abi,
-      deadline,
-      provider,
-      observer
-    });
-  },
+export const contractsInsert = new ValidatedMethod({
+  name: 'contracts.insert',
+  validate: ContractsSchema.validator(),
+  run(obj) {
+    return Contracts.insert(obj);
+  }
 });
