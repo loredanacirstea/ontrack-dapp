@@ -2,6 +2,10 @@
 
 Decentralized app for creating contracts with a deadline and observer.
 
+Needs [MetaMask](https://metamask.io/) with an enabled account to work. Use it only on a Test Net!
+
+Status: prototype.
+
 ## How it works
 
 A contract is created between a client and a provider, with an agreed deadline and an Observer contract address.

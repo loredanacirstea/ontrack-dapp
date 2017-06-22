@@ -13,7 +13,8 @@ let ContractsSchema = new SimpleSchema({
     type: String
   },
   abi: {
-    type: String
+    type: String,
+    optional: true
   },
   data: {
     type: String,
@@ -24,16 +25,20 @@ let ContractsSchema = new SimpleSchema({
     optional: true
   },
   deadline: {
-    type: Date
+    type: Date,
+    optional: true
   },
   client: {
-    type: String
+    type: String,
+    optional: true
   },
   provider: {
-    type: String
+    type: String,
+    optional: true
   },
   observer: {
-    type: String
+    type: String,
+    optional: true
   },
   networkId: {
     type: String,

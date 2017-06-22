@@ -17,42 +17,48 @@ export default class AddContract extends Component {
 
   addContract(ev) {
     let { contract } = this;
-    let { networkId } = this.props;
+    let { networkId, observers } = this.props;
+    let { client, name, provider, observer, deadline, ether } = contract;
+    let { abi, data, gas } = OnTrack;
+    let deadlineDiff, observerInst;
 
-    if(!contract.name || !contract.provider || !contract.observer || !contract.deadline)
-      return;
+    client = web3.eth.accounts[0];
 
-    contract.client = web3.eth.accounts[0];
-    if(!contract.client)
+    if(!name || !provider || !observer || !deadline || !client)
       return;
 
     // Deadline is actually the difference in seconds between the deadline and now
-    let deadlineDiff = (contract.deadline.getTime() - Date.now()) / 1000;
+    deadlineDiff = (deadline.getTime() - Date.now()) / 1000;
+    ether = parseFloat(ether);
 
-
-    let observer = this.props.observers.filter(o => {
-      if(o._id == contract.observer)
+    // Get selected Observer
+    observerInst = observers.filter(o => {
+      if(o._id == observer)
         return true;
     })[0];
 
-    let trackContract = web3.eth.contract(JSON.parse(OnTrack.abi));
-    // Deploy contract
-    let track = trackContract.new(deadlineDiff, contract.provider, observer.address, {
-      from: contract.client,
-      data: OnTrack.data,
-      gas: OnTrack.gas
+    // Deploy new OnTrack contract
+    let trackContract = web3.eth.contract(JSON.parse(abi));
+    let track = trackContract.new(deadlineDiff, provider, observerInst.address, {
+      from: client,
+      data,
+      gas,
+      value: web3.toWei(ether, 'ether')
     }, function (err, res) {
       console.log(err, res);
+
       if(!res || !res.address)
         return;
-
       console.log('Contract mined! address: ' + res.address + ' transactionHash: ' + res.transactionHash);
-      contract.address = res.address;
-      contract.transactionHash = res.transactionHash;
-      contract.networkId = networkId;
-      contract = Object.assign(contract, OnTrack);
-      delete contract.code;
-      Meteor.call('contracts.insert', contract);
+
+      // Insert contract details in our database
+      let obj = {
+        name, client, provider, observer, deadline,
+        networkId, abi, gas, data,
+        address: res.address,
+        transactionHash: res.transactionHash
+      }
+      Meteor.call('contracts.insert', obj);
     });
   }
 
@@ -63,7 +69,7 @@ export default class AddContract extends Component {
 
     // Defaults
     this.contract.observer = options[0] ? options[0].value : null;
-    this.contract.name = 'Contract1';
+    this.contract.name = 'Contract_0';
     this.contract.deadline = new Date();
 
     return React.createElement('div', {
@@ -73,6 +79,11 @@ export default class AddContract extends Component {
         label: 'Name',
         defaultValue: this.contract.name,
         onChange: (value) => this.contract.name = value
+      }),
+      React.createElement(Input, {
+        label: 'Ether',
+        defaultValue: 0,
+        onChange: (value) => this.contract.ether = value
       }),
       React.createElement(Input, {
         label: 'Provider',
