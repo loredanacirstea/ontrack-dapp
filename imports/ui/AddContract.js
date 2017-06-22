@@ -66,13 +66,33 @@ export default class AddContract extends Component {
     this.contract.name = 'Contract1';
     this.contract.deadline = new Date();
 
-    return React.createElement('div', {},
-      React.createElement(Input, {label: 'Name', defaultValue: this.contract.name, onChange: (value) => this.contract.name = value}),
-      React.createElement(Input, {label: 'Provider', onChange: (value) => this.contract.provider = value}),
-      React.createElement(Select, {label: 'Observer', options, onChange: (value) => this.contract.observer = value}),
+    return React.createElement('div', {
+        className: 'col col-1-2 tablet-col-1-1'
+      },
+      React.createElement(Input, {
+        label: 'Name',
+        defaultValue: this.contract.name,
+        onChange: (value) => this.contract.name = value
+      }),
+      React.createElement(Input, {
+        label: 'Provider',
+        onChange: (value) => this.contract.provider = value
+      }),
+      React.createElement(Select, {
+        label: 'Observer',
+        options,
+        onChange: (value) => this.contract.observer = value
+      }),
       //React.createElement(Datetime, {onChange: this.setDeadline, closeOnSelect: true})
-      React.createElement(Input, {label: 'Deadline', defaultValue: this.contract.deadline, onChange: this.setDeadline}),
-      React.createElement(Button, {label: '+', onClick: this.addContract})
+      React.createElement(Input, {
+        label: 'Deadline',
+        defaultValue: this.contract.deadline,
+        onChange: this.setDeadline
+      }),
+      React.createElement(Button, {
+        className: 'icon-plus large btn-submit',
+        onClick: this.addContract
+      })
     );
   }
 }

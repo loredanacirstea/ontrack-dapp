@@ -22,7 +22,7 @@ export default AppContainer = createContainer(() => {
 
   const contracts = Contracts.find().fetch();
   const observers = Observers.find().fetch();
-  console.log(contracts, observers);
+
   return {
     web3,
     networkId: networkId.get(),

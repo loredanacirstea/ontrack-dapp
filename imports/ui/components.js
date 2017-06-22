@@ -12,11 +12,13 @@ class Input extends Component {
   }
 
   render() {
-    return React.createElement('div', {},
-      React.createElement('span', {}, this.props.label),
+    let { className, label } = this.props;
+
+    return React.createElement('div', { className },
       React.createElement('input',
         {name: 'input', label: 'Title', defaultValue: this.props.defaultValue, onChange: this.onChange}
-      )
+      ),
+      React.createElement('span', {}, label)
     );
   }
 }
@@ -32,16 +34,16 @@ class Select extends Component {
   }
 
   render() {
-    const { label, options } = this.props;
+    const { label, options, className } = this.props;
 
     return React.createElement('div', {},
-      React.createElement('span', {}, label),
       React.createElement('select',
         {name: 'select', onChange: this.onChange},
         options.map((o, i) => {
           return React.createElement('option', {value:  o.value, key: i}, o.label);
         })
-      )
+      ),
+      React.createElement('span', { className }, label)
     );
   }
 }
@@ -53,9 +55,9 @@ class Button extends Component {
   }
 
   render() {
-    const { label, onClick } = this.props;
+    const { label, onClick, className } = this.props;
     return React.createElement('button',
-      {name: 'button', onClick: this.onClick}, label
+      {name: 'button', onClick: this.onClick, className}, label
     );
   }
 }

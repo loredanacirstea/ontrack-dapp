@@ -7,10 +7,10 @@ export default class App extends Component {
   render() {
     let { web3, contracts, observers} = this.props;
 
-    return React.createElement('div', {},
+    return React.createElement('div', {className: 'dapp-flex-content'},
+      //React.createElement(ObserverFeed, {web3: web3, contracts, observers}),
+      React.createElement(LiveFeed, {web3: web3, contracts, observers}),
       React.createElement(AddContract, {web3: web3, contracts, observers}),
-      React.createElement(ObserverFeed, {web3: web3, contracts, observers}),
-      React.createElement(LiveFeed, {web3: web3, contracts, observers})
     )
   }
 }
