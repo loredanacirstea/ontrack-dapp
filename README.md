@@ -21,6 +21,14 @@ meteor npm install
 meteor
 ```
 
+## Features in plan
+
+- live event feed for contracts
+- another type of Observer contract, where the answer is not automatic; the Observer just gets notified that he has to review an OnTrack contract; the app will have notification features
+- Observer contract should receive money when needed
+- The OnTrack contract should also charge the Provider an amount of ether as a service guarantee, paid back if the contract is finalized
+- implement accounts so you can track your own contracts
+
 ## Structure
 
 ### OnTrack Solidity Contract
@@ -31,17 +39,12 @@ meteor
 
 #### Sequence
 
-![Sequence Diagram](https://rawgit.com/loredanacirstea/ontrack-dapp/master/public/docs/OnTrackSequence.svg)
+![Sequence Diagram](https://rawgit.com/loredanacirstea/ontrack-dapp/master/public/docs/ontrack_sequence.svg)
 
-### Web App
+#### Flow
 
-## Features in plan
+![Flow Diagram](https://rawgit.com/loredanacirstea/ontrack-dapp/master/public/docs/ontrack_flow.png)
 
-- live event feed for contracts
-- another type of Observer contract, where the answer is not automatic; the Observer just gets notified that he has to review an OnTrack contract; the app will have notification features
-- Observer contract should receive money when needed
-- The OnTrack contract should also charge the Provider an amount of ether as a service guarantee, paid back if the contract is finalized
-- implement accounts so you can track your own contracts
 
 
 ## License
