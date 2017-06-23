@@ -23,12 +23,17 @@ meteor
 
 ## Structure
 
+### OnTrack Solidity Contract
+
+#### Class
+
+![Class Diagram](https://rawgit.com/loredanacirstea/ontrack-dapp/master/public/docs/ontrack_class.png)
+
+#### Sequence
+
+![Sequence Diagram](https://rawgit.com/loredanacirstea/ontrack-dapp/master/public/docs/OnTrackSequence.svg)
+
 ### Web App
-
-### OnTrack contract
-
-### Observer contract
-
 
 ## Features in plan
 
