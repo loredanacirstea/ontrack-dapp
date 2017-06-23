@@ -20,8 +20,8 @@ export default AppContainer = createContainer(() => {
   const observersHandle = Meteor.subscribe('observers.network', networkId.get());
   const loading = !contractsHandle.ready() && !observersHandle.ready() && !networkId.get();
 
-  const contracts = Contracts.find().fetch();
-  const observers = Observers.find().fetch();
+  const contracts = Contracts.find({}, {sort: {createdAt: -1}}).fetch();
+  const observers = Observers.find({}, {sort: {createdAt: -1}}).fetch();
 
   return {
     web3,
