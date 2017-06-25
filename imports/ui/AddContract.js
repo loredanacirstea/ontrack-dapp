@@ -6,13 +6,15 @@ import { Input, Select, Button } from './components.js';
 export default class AddContract extends Component {
   constructor(props) {
     super(props);
-    this.setDeadline = this.setDeadline.bind(this);
     this.addContract = this.addContract.bind(this);
-    this.contract = {};
-  }
+    this.state = { submitted: 0, pending: 0 };
 
-  setDeadline(value) {
-    this.contract.deadline = new Date(value);
+    let deadline = new Date();
+    deadline.setMinutes(deadline.getMinutes() + 30);
+    this.contract = {
+      name: 'Contract_0',
+      deadline
+    }
   }
 
   addContract(ev) {
@@ -20,15 +22,15 @@ export default class AddContract extends Component {
     let { networkId, observers } = this.props;
     let { client, name, provider, observer, deadline, ether } = contract;
     let { abi, data, gas } = OnTrack;
-    let deadlineDiff, observerInst;
+    let observerInst,
+      self = this;
 
     client = web3.eth.accounts[0];
-
+    this.setState({ submitted : 1 });
+    console.log('client, name, provider, observer, deadline, ether', client, name, provider, observer, deadline, ether)
     if(!name || !provider || !observer || !deadline || !client)
       return;
 
-    // Deadline is actually the difference in seconds between the deadline and now
-    deadlineDiff = (deadline.getTime() - Date.now()) / 1000;
     ether = parseFloat(ether);
 
     // Get selected Observer
@@ -39,7 +41,7 @@ export default class AddContract extends Component {
 
     // Deploy new OnTrack contract
     let trackContract = web3.eth.contract(JSON.parse(abi));
-    let track = trackContract.new(deadlineDiff, provider, observerInst.address, {
+    let track = trackContract.new(deadline.getTime(), provider, observerInst.address, {
       from: client,
       data,
       gas,
@@ -47,8 +49,13 @@ export default class AddContract extends Component {
     }, function (err, res) {
       console.log(err, res);
 
-      if(!res || !res.address)
+      if(!res)
         return;
+      if(!res.address) {
+        self.setState({pending: 1});
+        return;
+      }
+
       console.log('Contract mined! address: ' + res.address + ' transactionHash: ' + res.transactionHash);
 
       // Insert contract details in our database
@@ -59,51 +66,58 @@ export default class AddContract extends Component {
         transactionHash: res.transactionHash
       }
       Meteor.call('contracts.insert', obj);
+      self.setState({pending: 0, submitted: 0})
     });
   }
 
   render() {
+    let { contract } = this;
+    const { submitted, pending } = this.state;
+    const account = this.props.web3.eth.accounts[0];
     let options = this.props.observers.map(o => {
       return {value: o._id, label: o.name};
     });
 
     // Defaults
-    this.contract.observer = options[0] ? options[0].value : null;
-    this.contract.name = 'Contract_0';
-    this.contract.deadline = new Date();
+    contract.observer = contract.observer || (options[0] ? options[0].value : null);
 
     return React.createElement('div', {
         className: 'col col-1-2 tablet-col-1-1'
       },
+      account ? null : React.createElement('span', {}, 'not logged in with MetaMask!'),
       React.createElement(Input, {
         label: 'Name',
-        defaultValue: this.contract.name,
-        onChange: (value) => this.contract.name = value
+        defaultValue: contract.name,
+        className: (submitted && !contract.name) ? 'dapp-error': '',
+        onChange: (value) => contract.name = value
       }),
       React.createElement(Input, {
         label: 'Ether',
         defaultValue: 0,
-        onChange: (value) => this.contract.ether = value
+        onChange: (value) => contract.ether = value
       }),
       React.createElement(Input, {
         label: 'Provider',
-        onChange: (value) => this.contract.provider = value
+        className: (submitted && !contract.provider) ? 'dapp-error': '',
+        onChange: (value) => contract.provider = value
       }),
       React.createElement(Select, {
         label: 'Observer',
         options,
-        onChange: (value) => this.contract.observer = value
+        onChange: (value) => contract.observer = value
       }),
-      //React.createElement(Datetime, {onChange: this.setDeadline, closeOnSelect: true})
       React.createElement(Input, {
         label: 'Deadline',
-        defaultValue: this.contract.deadline,
-        onChange: this.setDeadline
+        defaultValue: contract.deadline,
+        className: (submitted && !contract.deadline) ? 'dapp-error': '',
+        onChange: (value) => contract.deadline = new Date(value)
       }),
       React.createElement(Button, {
         className: 'icon-plus large btn-submit',
         onClick: this.addContract
-      })
+      }),
+      !pending ? null :
+        React.createElement('span', { className: 'dapp-pending'}, '.. pending ..')
     );
   }
 }
