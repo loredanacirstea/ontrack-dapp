@@ -14,6 +14,16 @@ The client can confirm that the contract is finalized and the provider receives 
 
 If the client and provider do not agree on the contract fulfillment, an Observer is requested when either of them request their funds. The Observer returns true if the contract was fulfilled and false otherwise. Payment proceeds accordingly.
 
+## Video demos
+
+OnTrack - Ethereum Dapp - Part 1 - Smart Contract Code
+https://www.youtube.com/watch?v=z_ij2d55ihM
+
+OnTrack - Ethereum Dapp - Part 2 - Smart Contract Testing
+https://www.youtube.com/watch?v=X4xqIYFFbDA&t=9s
+
+OnTrack - Ethereum Dapp - Part 3 - Meteor Web App
+
 ## Run locally
 
 ```
@@ -23,7 +33,7 @@ meteor
 
 ## Features in plan
 
-- live event feed for contracts
+- log failed transactions, render a pending notification after doing a command (transaction)
 - another type of Observer contract, where the answer is not automatic; the Observer just gets notified that he has to review an OnTrack contract; the app will have notification features
 - Observer contract should receive money when needed
 - The OnTrack contract should also charge the Provider an amount of ether as a service guarantee, paid back if the contract is finalized
